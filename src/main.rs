@@ -9,39 +9,46 @@ use piston::input::*;
 use glutin_window::GlutinWindow as Window;
 use opengl_graphics::{ GlGraphics, OpenGL };
 
+const SIZE: u32 = 50;
+
+const GREEN: [f32; 4] = [0.0, 1.0, 0.0, 1.0];
+const BLUE:  [f32; 4] = [0.0, 0.0, 1.0, 1.0];
+const RED:   [f32; 4] = [1.0, 0.0, 0.0, 1.0];
+
 pub struct App {
-    gl: GlGraphics, // OpenGL drawing backend.
-    rotation: f64   // Rotation for the square.
+    gl: GlGraphics,
+    rotation_blue: f64,
+    rotation_red: f64
 }
 
 impl App {
     fn render(&mut self, args: &RenderArgs) {
         use graphics::*;
 
-        const GREEN: [f32; 4] = [0.0, 1.0, 0.0, 1.0];
-        const RED:   [f32; 4] = [1.0, 0.0, 0.0, 1.0];
-
-        let square = rectangle::square(0.0, 0.0, 50.0);
-        let rotation = self.rotation;
-        let (x, y) = ((args.width / 2) as f64,
-                      (args.height / 2) as f64);
+        let square = rectangle::square(0.0, 0.0, SIZE as f64);
+        let (rot_blue, rot_red) = (self.rotation_blue, self.rotation_red);
+        let (x, y) = (args.width as f64 / 2.0, args.height as f64 / 2.0);
 
         self.gl.draw(args.viewport(), |c, gl| {
-            // Clear the screen.
             clear(GREEN, gl);
 
-            let transform = c.transform.trans(x, y)
-                .rot_rad(rotation)
-                .trans(-25.0, -25.0);
+            let transform_blue = c.transform
+                .trans(x, y)
+                .rot_rad(rot_blue)
+                .trans(SIZE as f64 * -2.5, SIZE as f64 * -2.5);
+            rectangle(BLUE, square, transform_blue, gl);
 
-            // Draw a box rotating around the middle of the screen.
-            rectangle(RED, square, transform, gl);
+            let transform_red = c.transform
+                .trans(x, y)
+                .rot_rad(rot_red)
+                .trans(SIZE as f64 * -1.25, SIZE as f64 * -1.25);
+            rectangle(RED, square, transform_red, gl);
         });
     }
 
     fn update(&mut self, args: &UpdateArgs) {
-        // Rotate 2 radians per second.
-        self.rotation += 2.0 * args.dt;
+        self.rotation_blue -= args.dt;
+        self.rotation_red += 2.0 * args.dt;
     }
 }
 
@@ -51,18 +58,18 @@ fn main() {
 
     // Create an Glutin window.
     let mut window: Window = WindowSettings::new(
-        "spinning-square",
-        [200, 200]
+        "Orbits",
+        [SIZE * 8, SIZE * 8]
     )
         .opengl(opengl)
         .exit_on_esc(true)
         .build()
         .unwrap();
 
-    // Create a new game and run it.
     let mut app = App {
         gl: GlGraphics::new(opengl),
-        rotation: 0.0
+        rotation_blue: 0.0,
+        rotation_red: 0.0
     };
 
     let mut events = Events::new(EventSettings::new());
