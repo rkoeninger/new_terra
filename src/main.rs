@@ -2,12 +2,16 @@ extern crate piston;
 extern crate graphics;
 extern crate glutin_window;
 extern crate opengl_graphics;
+extern crate image;
 
 use piston::window::WindowSettings;
 use piston::event_loop::*;
 use piston::input::*;
 use glutin_window::GlutinWindow as Window;
 use opengl_graphics::{ GlGraphics, OpenGL };
+use image::ImageDecoder;
+use image::bmp::BMPDecoder;
+use std::fs::File;
 
 const SIZE: u32 = 50;
 
@@ -52,11 +56,18 @@ impl App {
     }
 }
 
-fn main() {
+fn run() -> std::io::Result<()> {
     // Change this to OpenGL::V2_1 if not working.
     let opengl = OpenGL::V3_2;
 
-    // Create an Glutin window.
+    let file = File::create("./scout.bmp")?;
+    let mut decoder = BMPDecoder::new(file);
+
+    let mut data = match decoder.read_image() {
+        Ok(x) => Ok(x),
+        Err(_) => Err(std::io::Error::last_os_error())
+    }?;
+
     let mut window: Window = WindowSettings::new(
         "Orbits",
         [SIZE * 8, SIZE * 8]
@@ -81,5 +92,18 @@ fn main() {
         if let Some(u) = e.update_args() {
             app.update(&u);
         }
+    }
+
+    Ok(())
+}
+
+fn main() {
+    match std::env::current_dir() {
+        Ok(p) => println!("pwd: {:?}", p),
+        _ => println!("PWD UNKNOWN")
+    }
+    match run() {
+        Err(x) => println!("FAILURE: {}", x),
+        _ => ()
     }
 }
