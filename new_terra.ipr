@@ -17,6 +17,11 @@
   <component name="InspectionProjectProfileManager">
     <profile version="1.0" is_locked="false">
       <option name="myName" value="Project Default" />
+      <inspection_tool class="SpellCheckingInspection" enabled="false" level="TYPO" enabled_by_default="false">
+        <option name="processCode" value="true" />
+        <option name="processLiterals" value="true" />
+        <option name="processComments" value="true" />
+      </inspection_tool>
     </profile>
     <version value="1.0" />
   </component>
@@ -133,7 +138,7 @@
     </configuration>
   </component>
   <component name="RustProjectSettings">
-    <option name="toolchainHomeDirectory" value="C:\Users\Bort\.cargo\bin" />
+    <option name="toolchainHomeDirectory" value="$CARGO_HOME$" />
   </component>
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="Git" />
