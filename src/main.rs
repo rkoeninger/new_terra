@@ -63,10 +63,17 @@ fn run() -> std::io::Result<()> {
     let file = File::open("./scout.bmp")?;
     let mut decoder = BMPDecoder::new(file);
 
-    let mut data = match decoder.read_image() {
+    let data = match decoder.read_image() {
         Ok(x) => Ok(x),
         Err(_) => Err(std::io::Error::last_os_error())
     }?;
+
+    let u8data = match data {
+        image::DecodingResult::U8(bytes) => Ok(bytes),
+        _ => Err(std::io::Error::new(std::io::ErrorKind::Other, "must be U8"))
+    }?;
+
+    println!("{:?}", u8data);
 
     let mut window: Window = WindowSettings::new(
         "Orbits",
