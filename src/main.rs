@@ -60,7 +60,7 @@ fn run() -> std::io::Result<()> {
     // Change this to OpenGL::V2_1 if not working.
     let opengl = OpenGL::V3_2;
 
-    let file = File::create("./scout.bmp")?;
+    let file = File::open("./scout.bmp")?;
     let mut decoder = BMPDecoder::new(file);
 
     let mut data = match decoder.read_image() {
