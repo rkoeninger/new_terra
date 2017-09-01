@@ -4,20 +4,22 @@ extern crate glutin_window;
 extern crate opengl_graphics;
 extern crate image;
 
-use piston::window::WindowSettings;
-use piston::event_loop::*;
-use piston::input::*;
-use glutin_window::GlutinWindow as Window;
-use opengl_graphics::{ GlGraphics, OpenGL };
 use image::ImageDecoder;
 use image::bmp::BMPDecoder;
+use glutin_window::GlutinWindow as Window;
+use opengl_graphics::{ GlGraphics, OpenGL };
+use piston::event_loop::*;
+use piston::input::*;
+use piston::window::WindowSettings;
+use std::env::{ current_dir };
 use std::fs::File;
+use std::io::*;
 
 const SIZE: u32 = 50;
 
+const RED:   [f32; 4] = [1.0, 0.0, 0.0, 1.0];
 const GREEN: [f32; 4] = [0.0, 1.0, 0.0, 1.0];
 const BLUE:  [f32; 4] = [0.0, 0.0, 1.0, 1.0];
-const RED:   [f32; 4] = [1.0, 0.0, 0.0, 1.0];
 
 pub struct App {
     gl: GlGraphics,
@@ -56,7 +58,7 @@ impl App {
     }
 }
 
-fn run() -> std::io::Result<()> {
+fn run() -> Result<()> {
     // Change this to OpenGL::V2_1 if not working.
     let opengl = OpenGL::V3_2;
 
@@ -65,12 +67,12 @@ fn run() -> std::io::Result<()> {
 
     let data = match decoder.read_image() {
         Ok(x) => Ok(x),
-        Err(_) => Err(std::io::Error::last_os_error())
+        Err(_) => Err(Error::last_os_error())
     }?;
 
     let u8data = match data {
         image::DecodingResult::U8(bytes) => Ok(bytes),
-        _ => Err(std::io::Error::new(std::io::ErrorKind::Other, "must be U8"))
+        _ => Err(Error::new(ErrorKind::Other, "must be U8"))
     }?;
 
     println!("{:?}", u8data);
@@ -105,7 +107,7 @@ fn run() -> std::io::Result<()> {
 }
 
 fn main() {
-    match std::env::current_dir() {
+    match current_dir() {
         Ok(p) => println!("pwd: {:?}", p),
         _ => println!("PWD UNKNOWN")
     }
